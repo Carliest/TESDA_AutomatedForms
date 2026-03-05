@@ -1,0 +1,35 @@
+{
+  "CandidateCount": 2,
+  "Qualification": "Bookkeeping NC II",
+  "Assessor": "dasdas",
+  "RQMCode": "dasd",
+  "Scholarship": "adsa",
+  "TrainingDuration": "asdas",
+  "AssessmentDate": "2026-01-26",
+  "Candidates": [
+    {
+      "Name": "21s",
+      "Reference": "adas",
+      "AssessmentFee": "Absent",
+      "AssessorFee": "21"
+    },
+    {
+      "Name": "asdas",
+      "Reference": "das",
+      "AssessmentFee": "Full",
+      "AssessorFee": "231"
+    }
+  ],
+  "Signatories": {
+    "AttendanceSheetName": "EDMAN L. VALENCIANO",
+    "AttendanceSheetPosition": "AC Manager",
+    "BillingAssessorACName": "EDMAN L. VALENCIANO",
+    "BillingAssessorACPosition": "AC Manager",
+    "BillingAssessorName": "RAMON C. SOLTES, JR.",
+    "BillingAssessorPosition": "AC Processing Officer",
+    "BillingAssessmentACName": "EDMAN L. VALENCIANO",
+    "BillingAssessmentACPosition": "AC Manager",
+    "BillingAssessmentVSName": "ROSALYN T. PERIDA, PhD",
+    "BillingAssessmentVSPosition": "Vocational School Superintendent I"
+  }
+}

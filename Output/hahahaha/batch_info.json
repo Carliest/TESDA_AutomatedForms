@@ -1,0 +1,41 @@
+{
+  "CandidateCount": 3,
+  "Qualification": "Driving NC II",
+  "Assessor": "Ramon Magsaysay",
+  "RQMCode": "C2312",
+  "Scholarship": "dasdas",
+  "TrainingDuration": "2 months",
+  "AssessmentDate": "2026-02-11",
+  "Candidates": [
+    {
+      "Name": "carl",
+      "Reference": "5412412",
+      "AssessmentFee": "Full",
+      "AssessorFee": "1000"
+    },
+    {
+      "Name": "edman",
+      "Reference": "312312",
+      "AssessmentFee": "Full",
+      "AssessorFee": "1000"
+    },
+    {
+      "Name": "klein",
+      "Reference": "12412",
+      "AssessmentFee": "Full",
+      "AssessorFee": "1000"
+    }
+  ],
+  "Signatories": {
+    "AttendanceSheetName": "EDMAN L. VALENCIANO",
+    "AttendanceSheetPosition": "AC Manager",
+    "BillingAssessorACName": "EDMAN L. VALENCIANO",
+    "BillingAssessorACPosition": "AC Manager",
+    "BillingAssessorName": "RAMON C. SOLTES, JR.",
+    "BillingAssessorPosition": "AC Processing Officer",
+    "BillingAssessmentACName": "EDMAN L. VALENCIANO",
+    "BillingAssessmentACPosition": "AC Manager",
+    "BillingAssessmentVSName": "ROSALYN T. PERIDA, PhD",
+    "BillingAssessmentVSPosition": "Vocational School Superintendent I"
+  }
+}

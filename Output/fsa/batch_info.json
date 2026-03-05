@@ -1,0 +1,35 @@
+{
+  "CandidateCount": 2,
+  "Qualification": "Cookery NC II",
+  "Assessor": "fas",
+  "RQMCode": "sdafd",
+  "Scholarship": "asdfdsa",
+  "TrainingDuration": "sdafsd",
+  "AssessmentDate": "2026-01-27",
+  "Candidates": [
+    {
+      "Name": "dsa",
+      "Reference": "asd",
+      "AssessmentFee": "Full",
+      "AssessorFee": "12"
+    },
+    {
+      "Name": "asdas",
+      "Reference": "sadas",
+      "AssessmentFee": "COC1",
+      "AssessorFee": "41"
+    }
+  ],
+  "Signatories": {
+    "AttendanceSheetName": "EDMAN L. VALENCIANO",
+    "AttendanceSheetPosition": "AC Manager",
+    "BillingAssessorACName": "EDMAN L. VALENCIANO",
+    "BillingAssessorACPosition": "AC Manager",
+    "BillingAssessorName": "RAMON C. SOLTES, JR.",
+    "BillingAssessorPosition": "AC Processing Officer",
+    "BillingAssessmentACName": "EDMAN L. VALENCIANO",
+    "BillingAssessmentACPosition": "AC Manager",
+    "BillingAssessmentVSName": "ROSALYN T. PERIDA, PhD",
+    "BillingAssessmentVSPosition": "Vocational School Superintendent I"
+  }
+}

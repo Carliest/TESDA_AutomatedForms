@@ -1,0 +1,35 @@
+{
+  "CandidateCount": 2,
+  "Qualification": "Bartending NC II",
+  "Assessor": "dsad",
+  "RQMCode": "dsadas",
+  "Scholarship": "dasdas",
+  "TrainingDuration": "dsadas",
+  "AssessmentDate": "2026-01-27",
+  "Candidates": [
+    {
+      "Name": "das",
+      "Reference": "asd",
+      "AssessmentFee": "Full",
+      "AssessorFee": "12"
+    },
+    {
+      "Name": "czxc",
+      "Reference": "asdas",
+      "AssessmentFee": "Full",
+      "AssessorFee": "213"
+    }
+  ],
+  "Signatories": {
+    "AttendanceSheetName": "EDMAN L. VALENCIANO",
+    "AttendanceSheetPosition": "AC Manager",
+    "BillingAssessorACName": "EDMAN L. VALENCIANO",
+    "BillingAssessorACPosition": "AC Manager",
+    "BillingAssessorName": "RAMON C. SOLTES, JR.",
+    "BillingAssessorPosition": "AC Processing Officer",
+    "BillingAssessmentACName": "EDMAN L. VALENCIANO",
+    "BillingAssessmentACPosition": "AC Manager",
+    "BillingAssessmentVSName": "ROSALYN T. PERIDA, PhD",
+    "BillingAssessmentVSPosition": "Vocational School Superintendent I"
+  }
+}

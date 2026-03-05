@@ -1,0 +1,65 @@
+{
+  "CandidateCount": 7,
+  "Qualification": "Bartending NC II",
+  "Assessor": "Edman",
+  "RQMCode": "3213",
+  "Scholarship": "312",
+  "TrainingDuration": "3",
+  "AssessmentDate": "2026-03-06",
+  "Candidates": [
+    {
+      "Name": "dsa",
+      "Reference": "dsad",
+      "AssessmentFee": "Full",
+      "AssessorFee": "100"
+    },
+    {
+      "Name": "fds",
+      "Reference": "dsa",
+      "AssessmentFee": "Full",
+      "AssessorFee": "26"
+    },
+    {
+      "Name": "fds",
+      "Reference": "fsd",
+      "AssessmentFee": "Full",
+      "AssessorFee": "3"
+    },
+    {
+      "Name": "d",
+      "Reference": "sdsd",
+      "AssessmentFee": "Full",
+      "AssessorFee": "444"
+    },
+    {
+      "Name": "dd",
+      "Reference": "dfd",
+      "AssessmentFee": "Full",
+      "AssessorFee": "4"
+    },
+    {
+      "Name": "fds",
+      "Reference": "s",
+      "AssessmentFee": "Full",
+      "AssessorFee": "2"
+    },
+    {
+      "Name": "g",
+      "Reference": "fdsfs",
+      "AssessmentFee": "Full",
+      "AssessorFee": "23"
+    }
+  ],
+  "Signatories": {
+    "AttendanceSheetName": "EDMAN L.",
+    "AttendanceSheetPosition": "AC Manager",
+    "BillingAssessorACName": "EDMAN L. PANTUA",
+    "BillingAssessorACPosition": "AC Manager",
+    "BillingAssessorName": "RAMON C. SO",
+    "BillingAssessorPosition": "AC Processing Officer",
+    "BillingAssessmentACName": "EDMAN L. VALE",
+    "BillingAssessmentACPosition": "AC Manager",
+    "BillingAssessmentVSName": "ROSALYN T. P",
+    "BillingAssessmentVSPosition": "Vocational School Su"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "CandidateCount": 3,
+  "Qualification": "Motorcycle/Small Engine Servicing NC II",
+  "Assessor": "asd",
+  "RQMCode": "aff",
+  "Scholarship": "fadf",
+  "TrainingDuration": "fdsafd",
+  "AssessmentDate": "2026-01-27",
+  "Candidates": [
+    {
+      "Name": "hvvj",
+      "Reference": "fsda",
+      "AssessmentFee": "COC1",
+      "AssessorFee": "132"
+    },
+    {
+      "Name": "fgsdf",
+      "Reference": "dsaf",
+      "AssessmentFee": "Full",
+      "AssessorFee": "12"
+    },
+    {
+      "Name": "fdsfds",
+      "Reference": "afsd",
+      "AssessmentFee": "Absent",
+      "AssessorFee": "5"
+    }
+  ],
+  "Signatories": {
+    "AttendanceSheetName": "EDMAN L. VALENCIANO",
+    "AttendanceSheetPosition": "AC Manager",
+    "BillingAssessorACName": "EDMAN L. VALENCIANO",
+    "BillingAssessorACPosition": "AC Manager",
+    "BillingAssessorName": "RAMON C. SOLTES, JR.",
+    "BillingAssessorPosition": "AC Processing Officer",
+    "BillingAssessmentACName": "EDMAN L. VALENCIANO",
+    "BillingAssessmentACPosition": "AC Manager",
+    "BillingAssessmentVSName": "ROSALYN T. PERIDA, PhD",
+    "BillingAssessmentVSPosition": "Vocational School Superintendent I"
+  }
+}

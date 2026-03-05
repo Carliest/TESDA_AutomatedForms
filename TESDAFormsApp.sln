@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TESDAFormsApp", "TESDAFormsApp.csproj", "{4F59F77C-42C9-31F9-2925-9EC5F666A1F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F59F77C-42C9-31F9-2925-9EC5F666A1F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F59F77C-42C9-31F9-2925-9EC5F666A1F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F59F77C-42C9-31F9-2925-9EC5F666A1F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F59F77C-42C9-31F9-2925-9EC5F666A1F8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0146BACA-CC80-46BD-9860-5241C9CD9D97}
+	EndGlobalSection
+EndGlobal

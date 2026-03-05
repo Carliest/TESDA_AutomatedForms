@@ -1,0 +1,47 @@
+{
+  "CandidateCount": 4,
+  "Qualification": "Cookery NC II",
+  "Assessor": "f",
+  "RQMCode": "asfsf",
+  "Scholarship": "fsf",
+  "TrainingDuration": "3 months",
+  "AssessmentDate": "2026-01-28",
+  "Candidates": [
+    {
+      "Name": "fds",
+      "Reference": "sdaf",
+      "AssessmentFee": "Full",
+      "AssessorFee": "12"
+    },
+    {
+      "Name": "fsda",
+      "Reference": "fsdafsa",
+      "AssessmentFee": "COC1",
+      "AssessorFee": "15"
+    },
+    {
+      "Name": "fsdafdsa",
+      "Reference": "sda",
+      "AssessmentFee": "COC2",
+      "AssessorFee": "100"
+    },
+    {
+      "Name": "sdafsad",
+      "Reference": "fasdf",
+      "AssessmentFee": "COC3",
+      "AssessorFee": "231"
+    }
+  ],
+  "Signatories": {
+    "AttendanceSheetName": "EDML. VALENCIANO",
+    "AttendanceSheetPosition": "AC Mger",
+    "BillingAssessorACName": "EDHAHN L. VALENCIANO",
+    "BillingAssessorACPosition": "ACer",
+    "BillingAssessorName": "RAN C. SOLTES, JR.",
+    "BillingAssessorPosition": "AC Prong Officer",
+    "BillingAssessmentACName": "EDMENCIANO",
+    "BillingAssessmentACPosition": "AC Mager",
+    "BillingAssessmentVSName": "ROSALYNERIDA, PHD",
+    "BillingAssessmentVSPosition": "Vocatiool Superintendent I"
+  }
+}
