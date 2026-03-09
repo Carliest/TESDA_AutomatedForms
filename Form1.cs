@@ -179,10 +179,8 @@ public partial class MainForm : Form
     private Panel? contentPanel;
     private Button? btnNewBatch;
     private Button? btnLoadBatch;
-    private Button? btnReports;
     private NewBatchView? newBatchView;
     private LoadBatchView? loadBatchView;
-    private ReportsView? reportsView;
     
     private readonly Color sidebarColor = Color.FromArgb(30, 41, 59);
     private readonly Color activeButtonColor = Color.FromArgb(37, 99, 235);
@@ -274,11 +272,9 @@ public partial class MainForm : Form
         
         btnNewBatch = CreateNavButton("New Batch", 15);
         btnLoadBatch = CreateNavButton("Load Batch", 65);
-        btnReports = CreateNavButton("Reports", 115);
         
         navPanel.Controls.Add(btnNewBatch);
         navPanel.Controls.Add(btnLoadBatch);
-        navPanel.Controls.Add(btnReports);
         
         Panel footerPanel = new Panel
         {
@@ -290,7 +286,7 @@ public partial class MainForm : Form
         
         Label versionLabel = new Label
         {
-            Text = "v2.0.0",
+            Text = "Powered by Edtech",
             Font = new Font("Segoe UI", 7.5F),
             ForeColor = Color.FromArgb(148, 163, 184),
             AutoSize = true,
@@ -346,8 +342,6 @@ public partial class MainForm : Form
             btn.Click += (s, e) => ShowNewBatchView();
         else if (text == "Load Batch")
             btn.Click += (s, e) => ShowLoadBatchView();
-        else if (text == "Reports")
-            btn.Click += (s, e) => ShowReportsView();
         
         return btn;
     }
@@ -375,11 +369,6 @@ public partial class MainForm : Form
         {
             btnLoadBatch.BackColor = sidebarColor;
             btnLoadBatch.ForeColor = inactiveTextColor;
-        }
-        if (btnReports != null)
-        {
-            btnReports.BackColor = sidebarColor;
-            btnReports.ForeColor = inactiveTextColor;
         }
         
         if (activeBtn != null)
@@ -430,20 +419,6 @@ public partial class MainForm : Form
         loadBatchView.Dock = DockStyle.Fill;
         if (contentPanel != null)
             contentPanel.Controls.Add(loadBatchView);
-    }
-    
-    private void ShowReportsView()
-    {
-        SetActiveButton(btnReports);
-        if (contentPanel != null)
-            contentPanel.Controls.Clear();
-        
-        if (reportsView == null)
-            reportsView = new ReportsView();
-        
-        reportsView.Dock = DockStyle.Fill;
-        if (contentPanel != null)
-            contentPanel.Controls.Add(reportsView);
     }
     
     private void InitializeComponent()
@@ -817,7 +792,7 @@ public partial class NewBatchView : UserControl
         btnGenerate.Click += Generate;
         
         btnEditSignatories.Text = "Edit Signatories";
-        btnEditSignatories.Location = new Point(0, 55);
+        btnEditSignatories.Location = new Point(0, 50);
         btnEditSignatories.Width = 750;
         btnEditSignatories.Height = 40;
         btnEditSignatories.BackColor = Color.FromArgb(37, 99, 235);
@@ -826,11 +801,12 @@ public partial class NewBatchView : UserControl
         btnEditSignatories.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
         btnEditSignatories.Cursor = Cursors.Hand;
         btnEditSignatories.FlatAppearance.BorderSize = 0;
+        btnEditSignatories.Visible = true;
         btnEditSignatories.Click += (s, e) => OpenSignatoryEditor();
         
         btnCreateAnother.Text = "Create Another";
-        btnCreateAnother.Location = new Point(0, 105);
-        btnCreateAnother.Width = 440;
+        btnCreateAnother.Location = new Point(0, 55);
+        btnCreateAnother.Width = 362;
         btnCreateAnother.Height = 40;
         btnCreateAnother.BackColor = Color.FromArgb(103, 58, 183);
         btnCreateAnother.ForeColor = Color.White;
@@ -842,8 +818,8 @@ public partial class NewBatchView : UserControl
         btnCreateAnother.Click += (s, e) => ResetForm();
         
         btnEdit.Text = "Edit & Regenerate";
-        btnEdit.Location = new Point(460, 105);
-        btnEdit.Width = 440;
+        btnEdit.Location = new Point(387, 55);
+        btnEdit.Width = 362;
         btnEdit.Height = 40;
         btnEdit.BackColor = Color.FromArgb(255, 152, 0);
         btnEdit.ForeColor = Color.White;
@@ -930,6 +906,8 @@ public partial class NewBatchView : UserControl
         customDates.Clear();
         documentsGenerated = false;
         btnGenerate.Visible = true;
+        btnEditSignatories.Visible = true;
+        btnEditSignatories.Location = new Point(0, 50);
         btnCreateAnother.Visible = false;
         btnEdit.Visible = false;
         currentOutputFolder = "";
@@ -948,7 +926,7 @@ public partial class NewBatchView : UserControl
             // Find and select the qualification
             for (int i = 0; i < cboQualification.Items.Count; i++)
             {
-                if (cboQualification.Items[i].ToString() == batchInfo.Qualification)
+                if (cboQualification.Items[i]?.ToString() == batchInfo.Qualification)
                 {
                     cboQualification.SelectedIndex = i;
                     break;
@@ -1169,7 +1147,7 @@ public partial class NewBatchView : UserControl
                 }
 
                 string folderTitle = titleForm.FolderTitle;
-                currentOutputFolder = Path.Combine("Output", folderTitle);
+                currentOutputFolder = Path.Combine("C:\\TESDAOutput", folderTitle);
 
                 if (Directory.Exists(currentOutputFolder))
                 {
@@ -1199,6 +1177,8 @@ public partial class NewBatchView : UserControl
 
             documentsGenerated = true;
             btnGenerate.Visible = false;
+            btnEditSignatories.Visible = true;
+            btnEditSignatories.Location = new Point(0, 0);
             btnCreateAnother.Visible = true;
             btnEdit.Visible = true;
             lblStatus.ForeColor = Color.Green;
@@ -1347,6 +1327,16 @@ public partial class NewBatchView : UserControl
 
     void GenerateBilling(string template, string output, List<Candidate> candidates, int count)
     {
+        BatchSignatory sig = new BatchSignatory(); 
+        GenerateBillingStatic(template, output, candidates, count, cboQualification.SelectedItem?.ToString() ?? "", 
+                             txtAssessor.Text, txtRQMCode.Text, dtAssessment.Value.ToString("MM/dd/yyyy"),
+                             txtScholarship.Text, txtTrainingDuration.Text, signatories);
+    }
+    
+    static void GenerateBillingStatic(string template, string output, List<Candidate> candidates, int count, 
+                                     string qualification, string assessor, string rqmCode, string assessmentDate,
+                                     string scholarship, string trainingDuration, Signatory signatories)
+    {
         if (!File.Exists(template))
         {
             MessageBox.Show($"Template not found: {template}");
@@ -1379,7 +1369,6 @@ public partial class NewBatchView : UserControl
 
                 int r = 1;
                 decimal totalFee = 0;
-                string qualification = cboQualification.SelectedItem?.ToString() ?? "";
                 
                 foreach (var c in candidates)
                 {
@@ -1471,26 +1460,26 @@ public partial class NewBatchView : UserControl
                     totalRow.Append(cell2);
                 }
 
-                ReplaceFieldValue(doc, "1", cboQualification.SelectedItem?.ToString() ?? "");
-                ReplaceFieldValue(doc, "2", txtAssessor.Text);
-                ReplaceFieldValue(doc, "3", txtRQMCode.Text);
-                ReplaceFieldValue(doc, "4", dtAssessment.Value.ToString("MM/dd/yyyy"));
-                ReplaceFieldValue(doc, "5", txtScholarship.Text);
-                ReplaceFieldValue(doc, "6", txtTrainingDuration.Text);
+                ReplaceFieldValueStatic(doc, "1", qualification);
+                ReplaceFieldValueStatic(doc, "2", assessor);
+                ReplaceFieldValueStatic(doc, "3", rqmCode);
+                ReplaceFieldValueStatic(doc, "4", assessmentDate);
+                ReplaceFieldValueStatic(doc, "5", scholarship);
+                ReplaceFieldValueStatic(doc, "6", trainingDuration);
 
                 if (template.Contains("ASSESSOR") || template.Contains("Assessor"))
                 {
-                    ReplaceSignatory(doc, "EDMAN L. VALENCIANO", signatories.BillingAssessorACName, true);
-                    ReplaceSignatory(doc, "AC Manager", signatories.BillingAssessorACPosition, false);
-                    ReplaceSignatory(doc, "RAMON C. SOLTES, JR", signatories.BillingAssessorName, true);
-                    ReplaceSignatory(doc, "AC Processing Officer", signatories.BillingAssessorPosition, false);
+                    ReplaceSignatoryStatic(doc, "EDMAN L. VALENCIANO", signatories.BillingAssessorACName, true);
+                    ReplaceSignatoryStatic(doc, "AC Manager", signatories.BillingAssessorACPosition, false);
+                    ReplaceSignatoryStatic(doc, "RAMON C. SOLTES, JR", signatories.BillingAssessorName, true);
+                    ReplaceSignatoryStatic(doc, "AC Processing Officer", signatories.BillingAssessorPosition, false);
                 }
                 else if (template.Contains("Assessment") || template.Contains("ASSESSMENT"))
                 {
-                    ReplaceSignatory(doc, "EDMAN L. VALENCIANO", signatories.BillingAssessmentACName, true);
-                    ReplaceSignatory(doc, "AC Manager", signatories.BillingAssessmentACPosition, false);
-                    ReplaceSignatory(doc, "ROSALYN T. PERIDA, PhD", signatories.BillingAssessmentVSName, true);
-                    ReplaceSignatory(doc, "Vocational School Superintendent I", signatories.BillingAssessmentVSPosition, false);
+                    ReplaceSignatoryStatic(doc, "EDMAN L. VALENCIANO", signatories.BillingAssessmentACName, true);
+                    ReplaceSignatoryStatic(doc, "AC Manager", signatories.BillingAssessmentACPosition, false);
+                    ReplaceSignatoryStatic(doc, "ROSALYN T. PERIDA, PhD", signatories.BillingAssessmentVSName, true);
+                    ReplaceSignatoryStatic(doc, "Vocational School Superintendent I", signatories.BillingAssessmentVSPosition, false);
                 }
 
                 doc.MainDocumentPart?.Document?.Save();
@@ -1655,6 +1644,11 @@ public partial class NewBatchView : UserControl
 
     void ReplaceFieldValue(WordprocessingDocument doc, string placeholder, string value)
     {
+        ReplaceFieldValueStatic(doc, placeholder, value);
+    }
+
+    static void ReplaceFieldValueStatic(WordprocessingDocument doc, string placeholder, string value)
+    {
         try
         {
             var allTextElements = doc.MainDocumentPart?.Document?.Descendants<Text>().ToList();
@@ -1757,6 +1751,11 @@ public partial class NewBatchView : UserControl
 
     void ReplaceSignatory(WordprocessingDocument doc, string placeholder, string value, bool isBold)
     {
+        ReplaceSignatoryStatic(doc, placeholder, value, isBold);
+    }
+
+    static void ReplaceSignatoryStatic(WordprocessingDocument doc, string placeholder, string value, bool isBold)
+    {
         var body = doc.MainDocumentPart?.Document?.Body;
         if (body == null) return;
 
@@ -1768,7 +1767,7 @@ public partial class NewBatchView : UserControl
             if (!replaced && allTextElements[i].Text == placeholder)
             {
                 allTextElements[i].Text = value;
-                ApplyFormatting(allTextElements[i], isBold);
+                ApplyFormattingStatic(allTextElements[i], isBold);
                 
                 if (i + 1 < allTextElements.Count && allTextElements[i + 1].Text == ".")
                 {
@@ -1787,7 +1786,7 @@ public partial class NewBatchView : UserControl
                 if (!replaced && allTextElements[i].Text.Contains(placeholder))
                 {
                     allTextElements[i].Text = allTextElements[i].Text.Replace(placeholder, value);
-                    ApplyFormatting(allTextElements[i], isBold);
+                    ApplyFormattingStatic(allTextElements[i], isBold);
                     
                     if (i + 1 < allTextElements.Count && allTextElements[i + 1].Text == ".")
                     {
@@ -1802,6 +1801,11 @@ public partial class NewBatchView : UserControl
     }
 
     void ApplyFormatting(Text textElem, bool isBold)
+    {
+        ApplyFormattingStatic(textElem, isBold);
+    }
+
+    static void ApplyFormattingStatic(Text textElem, bool isBold)
     {
         var run = textElem.Ancestors<Run>().FirstOrDefault();
         if (run != null)
@@ -1841,6 +1845,7 @@ public partial class LoadBatchView : UserControl
     private Panel? batchesPanel;
     private TextBox? searchBox;
     private Label? pageLabel;
+    private Panel? searchContainer;
     
     // UI elements to hide when editing
     private Button? btnBrowse;
@@ -1907,10 +1912,10 @@ public partial class LoadBatchView : UserControl
         contentPanel = new Panel
         {
             Location = new Point(30, 110),
-            Width = 900,
-            Height = 600,
+            Width = 1260,
+            Height = 750,
             BackColor = Color.FromArgb(241, 245, 249),
-            AutoScroll = true,
+            AutoScroll = false,
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
         };
         
@@ -1976,14 +1981,27 @@ public partial class LoadBatchView : UserControl
         infoCard.Controls.Add(infoText);
         contentPanel.Controls.Add(infoCard);
         
-        // Search Bar
+        // Search Bar Container with Border
+        searchContainer = new Panel
+        {
+            Location = new Point(270, 260),
+            Width = 670,
+            Height = 60,
+            BackColor = Color.FromArgb(241, 245, 249),
+            BorderStyle = BorderStyle.None
+        };
+        
         searchBox = new TextBox
         {
-            Location = new Point(300, 230),
-            Width = 300,
-            Height = 35,
-            Font = new Font("Segoe UI", 10F),
-            PlaceholderText = "Search batches..."
+            Location = new Point(0, 0),
+            Width = 670,
+            Height = 60,
+            Font = new Font("Segoe UI", 14F),
+            PlaceholderText = " Search batches...",
+            BorderStyle = BorderStyle.FixedSingle,
+            BackColor = Color.White,
+            ForeColor = Color.FromArgb(30, 41, 59),
+            Multiline = false
         };
         searchBox.TextChanged += (s, e) => 
         {
@@ -1991,7 +2009,8 @@ public partial class LoadBatchView : UserControl
             currentPage = 0;
             RefreshBatchList();
         };
-        contentPanel.Controls.Add(searchBox);
+        searchContainer.Controls.Add(searchBox);
+        contentPanel.Controls.Add(searchContainer);
         
         recentLabel = new Label
         {
@@ -2004,10 +2023,10 @@ public partial class LoadBatchView : UserControl
         contentPanel.Controls.Add(recentLabel);
         
         // Border panels - adjust Width/Height values to change border thickness
-        borderTop = new Panel { Location = new Point(270, 290), Width = 1030, Height = 2, BackColor = Color.FromArgb(100, 116, 139) };
-        borderBottom = new Panel { Location = new Point(270, 660), Width = 1030, Height = 2, BackColor = Color.FromArgb(100, 116, 139) };
-        borderLeft = new Panel { Location = new Point(270, 290), Width = 2, Height = 370, BackColor = Color.FromArgb(100, 116, 139) };
-        borderRight = new Panel { Location = new Point(1298, 290), Width = 2, Height = 370, BackColor = Color.FromArgb(100, 116, 139) };
+        borderTop = new Panel { Location = new Point(270, 330), Width = 1030, Height = 2, BackColor = Color.FromArgb(100, 116, 139) };
+        borderBottom = new Panel { Location = new Point(270, 620), Width = 1030, Height = 2, BackColor = Color.FromArgb(100, 116, 139) };
+        borderLeft = new Panel { Location = new Point(270, 330), Width = 2, Height = 290, BackColor = Color.FromArgb(100, 116, 139) };
+        borderRight = new Panel { Location = new Point(1298, 330), Width = 2, Height = 290, BackColor = Color.FromArgb(100, 116, 139) };
         
         contentPanel.Controls.Add(borderTop);
         contentPanel.Controls.Add(borderBottom);
@@ -2016,9 +2035,9 @@ public partial class LoadBatchView : UserControl
         
         batchesPanel = new Panel
         {
-            Location = new Point(0, 300),
+            Location = new Point(0, 340),
             Width = 1300,
-            Height = 350,
+            Height = 280,
             AutoScroll = true,
             BackColor = Color.FromArgb(241, 245, 249)
         };
@@ -2027,13 +2046,13 @@ public partial class LoadBatchView : UserControl
         // Pagination controls
         paginationPanel = new Panel
         {
-            Location = new Point(300, 680),
+            Location = new Point(300, 635),
             Width = 880,
             Height = 40,
             BackColor = Color.FromArgb(241, 245, 249)
         };
         
-        Button btnPrevious = new RoundedButton
+        Button btnPrevious = new Button
         {
             Text = "← Previous",
             Location = new Point(300, 0),
@@ -2043,8 +2062,7 @@ public partial class LoadBatchView : UserControl
             ForeColor = Color.White,
             FlatStyle = FlatStyle.Flat,
             Font = new Font("Segoe UI", 9F),
-            Cursor = Cursors.Hand,
-            BorderRadius = 10
+            Cursor = Cursors.Hand
         };
         btnPrevious.FlatAppearance.BorderSize = 0;
         btnPrevious.Click += (s, e) =>
@@ -2054,16 +2072,20 @@ public partial class LoadBatchView : UserControl
                 currentPage--;
                 RefreshBatchList();
                 if (pageLabel != null)
-                    pageLabel.Text = $"Page {currentPage + 1}";
+                {
+                    var filtered = GetFilteredBatches();
+                    int totalPages = (int)Math.Ceiling((double)filtered.Count / itemsPerPage);
+                    pageLabel.Text = $"Page {currentPage + 1} of {totalPages}";
+                }
             }
         };
         paginationPanel.Controls.Add(btnPrevious);
         
         pageLabel = new Label
         {
-            Text = "Page 1",
-            Location = new Point(420, 8),
-            Width = 60,
+            Text = "Page 1 of 1",
+            Location = new Point(400, 8),
+            Width = 100,
             Height = 20,
             AutoSize = false,
             TextAlign = ContentAlignment.MiddleCenter,
@@ -2071,7 +2093,7 @@ public partial class LoadBatchView : UserControl
         };
         paginationPanel.Controls.Add(pageLabel);
         
-        Button btnNext = new RoundedButton
+        Button btnNext = new Button
         {
             Text = "Next →",
             Location = new Point(500, 0),
@@ -2081,8 +2103,7 @@ public partial class LoadBatchView : UserControl
             ForeColor = Color.White,
             FlatStyle = FlatStyle.Flat,
             Font = new Font("Segoe UI", 9F),
-            Cursor = Cursors.Hand,
-            BorderRadius = 10
+            Cursor = Cursors.Hand
         };
         btnNext.FlatAppearance.BorderSize = 0;
         btnNext.Click += (s, e) =>
@@ -2093,7 +2114,10 @@ public partial class LoadBatchView : UserControl
                 currentPage++;
                 RefreshBatchList();
                 if (pageLabel != null)
-                    pageLabel.Text = $"Page {currentPage + 1}";
+                {
+                    int totalPages = (int)Math.Ceiling((double)filtered.Count / itemsPerPage);
+                    pageLabel.Text = $"Page {currentPage + 1} of {totalPages}";
+                }
             }
         };
         paginationPanel.Controls.Add(btnNext);
@@ -2111,7 +2135,7 @@ public partial class LoadBatchView : UserControl
             return;
         batchesPanel.Controls.Clear();
         
-        string outputDir = "Output";
+        string outputDir = "C:\\TESDAOutput";
         if (!Directory.Exists(outputDir))
         {
             Directory.CreateDirectory(outputDir);
@@ -2127,6 +2151,8 @@ public partial class LoadBatchView : UserControl
                 TextAlign = ContentAlignment.MiddleCenter
             };
             batchesPanel.Controls.Add(noBatches);
+            if (pageLabel != null)
+                pageLabel.Text = "Page 1 of 1";
             return;
         }
         
@@ -2151,8 +2177,15 @@ public partial class LoadBatchView : UserControl
                 TextAlign = ContentAlignment.MiddleCenter
             };
             batchesPanel.Controls.Add(noBatches);
+            if (pageLabel != null)
+                pageLabel.Text = "Page 1 of 1";
             return;
         }
+        
+        // Update page indicator with total pages
+        int totalPages = (int)Math.Ceiling((double)filtered.Count / itemsPerPage);
+        if (pageLabel != null)
+            pageLabel.Text = $"Page {currentPage + 1} of {totalPages}";
         
         int startIdx = currentPage * itemsPerPage;
         int endIdx = Math.Min(startIdx + itemsPerPage, filtered.Count);
@@ -2224,16 +2257,17 @@ public partial class LoadBatchView : UserControl
             Font = new Font("Segoe UI Semibold", 11F, FontStyle.Bold),
             ForeColor = Color.FromArgb(30, 41, 59),
             Location = new Point(15, 10),
-            Width = 700,
-            Height = 25,
+            Width = 850,
+            Height = 20,
             AutoSize = false
         };
         
         Label lblQualification = new Label
         {
             Text = $"📄 {batchInfo.Qualification}",
-            Location = new Point(15, 40),
-            Width = 500,
+            Location = new Point(15, 35),
+            Width = 400,
+            Height = 20,
             AutoSize = false,
             Font = new Font("Segoe UI", 9F),
             ForeColor = Color.FromArgb(71, 85, 105)
@@ -2242,8 +2276,9 @@ public partial class LoadBatchView : UserControl
         Label lblCandidates = new Label
         {
             Text = $"👥 {batchInfo.CandidateCount} Candidates",
-            Location = new Point(430, 40),
-            Width = 200,
+            Location = new Point(430, 35),
+            Width = 180,
+            Height = 20,
             AutoSize = false,
             Font = new Font("Segoe UI", 9F),
             ForeColor = Color.FromArgb(71, 85, 105)
@@ -2252,8 +2287,9 @@ public partial class LoadBatchView : UserControl
         Label lblAssessor = new Label
         {
             Text = $"Assessor: {batchInfo.Assessor}",
-            Location = new Point(15, 65),
-            Width = 500,
+            Location = new Point(15, 60),
+            Width = 400,
+            Height = 20,
             AutoSize = false,
             Font = new Font("Segoe UI", 9F),
             ForeColor = Color.FromArgb(71, 85, 105)
@@ -2262,18 +2298,35 @@ public partial class LoadBatchView : UserControl
         Label lblDate = new Label
         {
             Text = $"📅 {batchInfo.AssessmentDate}",
-            Location = new Point(530, 65),
-            Width = 200,
+            Location = new Point(430, 60),
+            Width = 180,
+            Height = 20,
             AutoSize = false,
             Font = new Font("Segoe UI", 9F),
             ForeColor = Color.FromArgb(71, 85, 105)
         };
         
+        Button btnLoadData = new Button
+        {
+            Text = "Load Batch",
+            Location = new Point(630, 75),
+            Width = 105,
+            Height = 35,
+            BackColor = Color.FromArgb(22, 163, 74),
+            ForeColor = Color.White,
+            FlatStyle = FlatStyle.Flat,
+            Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
+            Cursor = Cursors.Hand,
+            Tag = folderPath
+        };
+        btnLoadData.FlatAppearance.BorderSize = 0;
+        btnLoadData.Click += (s, e) => LoadBatchData(folderPath, batchInfo);
+        
         Button btnLoad = new Button
         {
             Text = "Open Folder",
-            Location = new Point(730, 75),
-            Width = 130,
+            Location = new Point(745, 75),
+            Width = 115,
             Height = 35,
             BackColor = Color.FromArgb(100, 116, 139),
             ForeColor = Color.White,
@@ -2294,22 +2347,6 @@ public partial class LoadBatchView : UserControl
                 MessageBox.Show($"Error opening folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         };
-        
-        Button btnLoadData = new Button
-        {
-            Text = "Load Batch",
-            Location = new Point(630, 75),
-            Width = 90,
-            Height = 35,
-            BackColor = Color.FromArgb(22, 163, 74),
-            ForeColor = Color.White,
-            FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
-            Cursor = Cursors.Hand,
-            Tag = folderPath
-        };
-        btnLoadData.FlatAppearance.BorderSize = 0;
-        btnLoadData.Click += (s, e) => LoadBatchData(folderPath, batchInfo);
         
         item.Controls.Add(lblBatchName);
         item.Controls.Add(lblQualification);
@@ -2342,6 +2379,7 @@ public partial class LoadBatchView : UserControl
         if (btnBrowse != null) btnBrowse.Visible = false;
         if (infoCard != null) infoCard.Visible = false;
         if (searchBox != null) searchBox.Visible = false;
+        if (searchContainer != null) searchContainer.Visible = false;
         if (recentLabel != null) recentLabel.Visible = false;
         if (borderTop != null) borderTop.Visible = false;
         if (borderBottom != null) borderBottom.Visible = false;
@@ -2356,14 +2394,15 @@ public partial class LoadBatchView : UserControl
         }
         else
         {
-            // Create the edit form panel - centered
+            // Create the edit form panel with scrolling
             batchEditPanel = new Panel
             {
-                Location = new Point(50, 150),
-                Width = 1000,
-                Height = 600,
+                Location = new Point(0, 0),
+                Width = 1260,
+                Height = 750,
                 BackColor = Color.FromArgb(241, 245, 249),
-                AutoScroll = true
+                AutoScroll = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
             };
             
             // Title
@@ -2372,23 +2411,99 @@ public partial class LoadBatchView : UserControl
                 Text = "Edit Batch",
                 Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(30, 41, 59),
-                Location = new Point(50, 10),
+                Location = new Point(255, 5),
                 AutoSize = true
             };
             batchEditPanel.Controls.Add(editTitle);
             
+            int yPos = 35;
+            
             // Candidates card
-            Panel candCard = CreateEditCard("Candidates Information", 50, 50);
-            Label lblCandidates = new Label { Text = "Number of Candidates (Max 25)", Location = new Point(20, 50), Width = 300, Height = 25, AutoSize = false, Font = new Font("Segoe UI", 9F) };
+            Panel candCard = CreateEditCard("Candidates Information", 255, yPos);
+            candCard.Width = 750;
+            candCard.Height = 145;
+            Label lblCandidates = new Label { Text = "Number of Candidates (Max 25)", Location = new Point(20, 50), Width = 300, Height = 20, AutoSize = false, Font = new Font("Segoe UI", 9F) };
             editNumCandidates = new NumericUpDown { Location = new Point(20, 70), Width = 150, Maximum = 25, Minimum = 0, Font = new Font("Segoe UI", 10F) };
+            Button btnEditCandidates = new Button
+            {
+                Text = "Edit Candidates",
+                Location = new Point(380, 70),
+                Width = 350,
+                Height = 32,
+                BackColor = Color.FromArgb(37, 99, 235),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnEditCandidates.FlatAppearance.BorderSize = 0;
+            btnEditCandidates.Click += (s, e) =>
+            {
+                if (currentEditingBatchPath != null)
+                {
+                    var batchInfo = LoadBatchInfoJson(currentEditingBatchPath);
+                    if (batchInfo != null)
+                    {
+                        int requiredCount = (int)editNumCandidates.Value;
+                        
+                        // Ensure we have enough candidates in the list
+                        while (batchInfo.Candidates.Count < requiredCount)
+                        {
+                            batchInfo.Candidates.Add(new BatchCandidate { Name = "", Reference = "", AssessmentFee = "Full", AssessorFee = "" });
+                        }
+                        
+                        // Convert to editable Candidate objects
+                        var candidates = new List<Candidate>();
+                        foreach (var c in batchInfo.Candidates.Take(requiredCount))
+                        {
+                            candidates.Add(new Candidate { Name = c.Name, Reference = c.Reference, AssessmentFee = c.AssessmentFee, AssessorFee = c.AssessorFee });
+                        }
+                        
+                        var candForm = new CandidateForm(requiredCount, candidates, editCboQualification?.SelectedItem?.ToString() ?? "");
+                        if (candForm.ShowDialog() == DialogResult.OK)
+                        {
+                            // Update candidates in batch info
+                            var updatedCandidates = candForm.GetCandidates();
+                            batchInfo.Candidates.Clear();
+                            foreach (var cand in updatedCandidates)
+                            {
+                                batchInfo.Candidates.Add(new BatchCandidate 
+                                { 
+                                    Name = cand.Name, 
+                                    Reference = cand.Reference, 
+                                    AssessmentFee = cand.AssessmentFee, 
+                                    AssessorFee = cand.AssessorFee 
+                                });
+                            }
+                            
+                            // Save updated candidates to file immediately
+                            try
+                            {
+                                string jsonPath = Path.Combine(currentEditingBatchPath, "batch_info.json");
+                                var json = JsonSerializer.Serialize(batchInfo, new JsonSerializerOptions { WriteIndented = true });
+                                File.WriteAllText(jsonPath, json);
+                                MessageBox.Show("Candidates saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error saving candidates: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+            };
             candCard.Controls.Add(lblCandidates);
             candCard.Controls.Add(editNumCandidates);
+            candCard.Controls.Add(btnEditCandidates);
             batchEditPanel.Controls.Add(candCard);
+            yPos += candCard.Height + 8;
             
             // Qualification card
-            Panel qualCard = CreateEditCard("Qualification & Assessor", 50, 180);
+            Panel qualCard = CreateEditCard("Qualification & Assessor", 255, yPos);
+            qualCard.Width = 750;
+            qualCard.Height = 175;
             Label lblQual = new Label { Text = "Qualification *", Location = new Point(20, 50), AutoSize = true, Font = new Font("Segoe UI", 9F) };
-            editCboQualification = new ComboBox { Location = new Point(20, 70), Width = 710, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 10F) };
+            editCboQualification = new ComboBox { Location = new Point(20, 70), Width = 710, Height = 24, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 9F), BackColor = Color.White, ForeColor = Color.FromArgb(30, 41, 59) };
             editCboQualification.Items.AddRange(new object[]
             {
                 "Barangay Health Services NC II", "Bartending NC II", "Bookkeeping NC II",
@@ -2396,61 +2511,156 @@ public partial class LoadBatchView : UserControl
                 "Driving NC II", "Electrical Installation and Maintenance NC II", "Event Management Services NC III",
                 "Food and Beverage Services NC II", "Housekeeping NC II", "Motorcycle/Small Engine Servicing NC II"
             });
-            Label lblAssessor = new Label { Text = "Assessor Name *", Location = new Point(20, 110), AutoSize = true, Font = new Font("Segoe UI", 9F) };
-            editTxtAssessor = new TextBox { Location = new Point(20, 130), Width = 710, Font = new Font("Segoe UI", 10F) };
+            Label lblAssessor = new Label { Text = "Assessor Name *", Location = new Point(20, 100), AutoSize = true, Font = new Font("Segoe UI", 9F) };
+            editTxtAssessor = new TextBox { Location = new Point(20, 118), Width = 710, Height = 24, Font = new Font("Segoe UI", 9F), BackColor = Color.White, ForeColor = Color.FromArgb(30, 41, 59) };
             qualCard.Controls.Add(lblQual);
             qualCard.Controls.Add(editCboQualification);
             qualCard.Controls.Add(lblAssessor);
             qualCard.Controls.Add(editTxtAssessor);
             batchEditPanel.Controls.Add(qualCard);
+            yPos += qualCard.Height + 8;
             
             // Admin card
-            Panel adminCard = CreateEditCard("Administrative Details", 50, 350);
+            Panel adminCard = CreateEditCard("Administrative Details", 255, yPos);
+            adminCard.Width = 750;
+            adminCard.Height = 130;
             Label lblRQM = new Label { Text = "RQM Code *", Location = new Point(20, 50), AutoSize = true, Font = new Font("Segoe UI", 9F) };
-            editTxtRQMCode = new TextBox { Location = new Point(20, 70), Width = 340, Font = new Font("Segoe UI", 10F) };
+            editTxtRQMCode = new TextBox { Location = new Point(20, 68), Width = 340, Height = 24, Font = new Font("Segoe UI", 9F), BackColor = Color.White, ForeColor = Color.FromArgb(30, 41, 59) };
             Label lblSchol = new Label { Text = "Type of Scholarship *", Location = new Point(390, 50), AutoSize = true, Font = new Font("Segoe UI", 9F) };
-            editTxtScholarship = new TextBox { Location = new Point(390, 70), Width = 340, Font = new Font("Segoe UI", 10F) };
+            editTxtScholarship = new TextBox { Location = new Point(390, 68), Width = 340, Height = 24, Font = new Font("Segoe UI", 9F), BackColor = Color.White, ForeColor = Color.FromArgb(30, 41, 59) };
             adminCard.Controls.Add(lblRQM);
             adminCard.Controls.Add(editTxtRQMCode);
             adminCard.Controls.Add(lblSchol);
             adminCard.Controls.Add(editTxtScholarship);
             batchEditPanel.Controls.Add(adminCard);
+            yPos += adminCard.Height + 8;
             
             // Training card
-            Panel trainingCard = CreateEditCard("Training & Assessment", 50, 480);
+            Panel trainingCard = CreateEditCard("Training & Assessment", 255, yPos);
+            trainingCard.Width = 750;
+            trainingCard.Height = 130;
             Label lblDuration = new Label { Text = "Training Duration *", Location = new Point(20, 50), AutoSize = true, Font = new Font("Segoe UI", 9F) };
-            editTxtTrainingDuration = new TextBox { Location = new Point(20, 70), Width = 340, Font = new Font("Segoe UI", 10F) };
+            editTxtTrainingDuration = new TextBox { Location = new Point(20, 68), Width = 340, Height = 24, Font = new Font("Segoe UI", 9F), BackColor = Color.White, ForeColor = Color.FromArgb(30, 41, 59) };
             Label lblDate = new Label { Text = "Assessment Date *", Location = new Point(390, 50), AutoSize = true, Font = new Font("Segoe UI", 9F) };
-            editDtAssessment = new DateTimePicker { Location = new Point(390, 70), Width = 340, Font = new Font("Segoe UI", 10F) };
+            editDtAssessment = new DateTimePicker { Location = new Point(390, 68), Width = 340, Height = 24, Font = new Font("Segoe UI", 9F), BackColor = Color.White, ForeColor = Color.FromArgb(30, 41, 59) };
             trainingCard.Controls.Add(lblDuration);
             trainingCard.Controls.Add(editTxtTrainingDuration);
             trainingCard.Controls.Add(lblDate);
             trainingCard.Controls.Add(editDtAssessment);
             batchEditPanel.Controls.Add(trainingCard);
+            yPos += trainingCard.Height + 18;
+            
+            // Edit Signatories Button
+            Button btnEditSignatories = new Button
+            {
+                Text = "👤 Edit Signatories",
+                Location = new Point(255, yPos),
+                Width = 750,
+                Height = 35,
+                BackColor = Color.FromArgb(37, 99, 235),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnEditSignatories.FlatAppearance.BorderSize = 0;
+            btnEditSignatories.Click += (s, e) =>
+            {
+                if (currentEditingBatchPath != null)
+                {
+                    var batchInfo = LoadBatchInfoJson(currentEditingBatchPath);
+                    if (batchInfo != null)
+                    {
+                        var signatories = new Signatory
+                        {
+                            AttendanceSheetName = batchInfo.Signatories?.AttendanceSheetName ?? "EDMAN L. VALENCIANO",
+                            AttendanceSheetPosition = batchInfo.Signatories?.AttendanceSheetPosition ?? "AC Manager",
+                            BillingAssessorACName = batchInfo.Signatories?.BillingAssessorACName ?? "EDMAN L. VALENCIANO",
+                            BillingAssessorACPosition = batchInfo.Signatories?.BillingAssessorACPosition ?? "AC Manager",
+                            BillingAssessorName = batchInfo.Signatories?.BillingAssessorName ?? "RAMON C. SOLTES, JR.",
+                            BillingAssessorPosition = batchInfo.Signatories?.BillingAssessorPosition ?? "AC Processing Officer",
+                            BillingAssessmentACName = batchInfo.Signatories?.BillingAssessmentACName ?? "EDMAN L. VALENCIANO",
+                            BillingAssessmentACPosition = batchInfo.Signatories?.BillingAssessmentACPosition ?? "AC Manager",
+                            BillingAssessmentVSName = batchInfo.Signatories?.BillingAssessmentVSName ?? "ROSALYN T. PERIDA, PhD",
+                            BillingAssessmentVSPosition = batchInfo.Signatories?.BillingAssessmentVSPosition ?? "Vocational School Superintendent I"
+                        };
+                        var sigForm = new SignatoryEditorForm(signatories);
+                        if (sigForm.ShowDialog() == DialogResult.OK)
+                        {
+                            // Update signatories in batch info
+                            var updatedSignatories = sigForm.GetSignatories();
+                            batchInfo.Signatories = new BatchSignatory
+                            {
+                                AttendanceSheetName = updatedSignatories.AttendanceSheetName,
+                                AttendanceSheetPosition = updatedSignatories.AttendanceSheetPosition,
+                                BillingAssessorACName = updatedSignatories.BillingAssessorACName,
+                                BillingAssessorACPosition = updatedSignatories.BillingAssessorACPosition,
+                                BillingAssessorName = updatedSignatories.BillingAssessorName,
+                                BillingAssessorPosition = updatedSignatories.BillingAssessorPosition,
+                                BillingAssessmentACName = updatedSignatories.BillingAssessmentACName,
+                                BillingAssessmentACPosition = updatedSignatories.BillingAssessmentACPosition,
+                                BillingAssessmentVSName = updatedSignatories.BillingAssessmentVSName,
+                                BillingAssessmentVSPosition = updatedSignatories.BillingAssessmentVSPosition
+                            };
+                            
+                            // Save updated signatories to file
+                            try
+                            {
+                                string jsonPath = Path.Combine(currentEditingBatchPath, "batch_info.json");
+                                var json = JsonSerializer.Serialize(batchInfo, new JsonSerializerOptions { WriteIndented = true });
+                                File.WriteAllText(jsonPath, json);
+                                MessageBox.Show("Signatories saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error saving signatories: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+            };
+            batchEditPanel.Controls.Add(btnEditSignatories);
+            yPos += btnEditSignatories.Height + 15;
             
             // Buttons
             Button btnSaveEdit = new Button
             {
                 Text = "Save Edit",
-                Location = new Point(70, 520),
+                Location = new Point(255, yPos),
                 Width = 150,
-                Height = 40,
+                Height = 35,
                 BackColor = Color.FromArgb(22, 163, 74),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
+                Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
             btnSaveEdit.FlatAppearance.BorderSize = 0;
             btnSaveEdit.Click += (s, e) => SaveBatchEdit();
             batchEditPanel.Controls.Add(btnSaveEdit);
             
+            Button btnRegenerate = new Button
+            {
+                Text = "Regenerate Docs",
+                Location = new Point(415, yPos),
+                Width = 150,
+                Height = 35,
+                BackColor = Color.FromArgb(255, 152, 0),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnRegenerate.FlatAppearance.BorderSize = 0;
+            btnRegenerate.Click += (s, e) => RegenerateBatchDocuments();
+            batchEditPanel.Controls.Add(btnRegenerate);
+            
             Button btnCancel = new Button
             {
                 Text = "Cancel",
-                Location = new Point(230, 520),
+                Location = new Point(575, yPos),
                 Width = 100,
-                Height = 40,
+                Height = 35,
                 BackColor = Color.FromArgb(100, 116, 139),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -2467,7 +2677,17 @@ public partial class LoadBatchView : UserControl
         
         // Populate fields
         if (editNumCandidates != null) editNumCandidates.Value = batchInfo.CandidateCount;
-        if (editCboQualification != null) editCboQualification.SelectedItem = batchInfo.Qualification;
+        if (editCboQualification != null) 
+        {
+            for (int i = 0; i < editCboQualification.Items.Count; i++)
+            {
+                if (editCboQualification.Items[i]?.ToString() == batchInfo.Qualification)
+                {
+                    editCboQualification.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
         if (editTxtAssessor != null) editTxtAssessor.Text = batchInfo.Assessor;
         if (editTxtRQMCode != null) editTxtRQMCode.Text = batchInfo.RQMCode;
         if (editTxtScholarship != null) editTxtScholarship.Text = batchInfo.Scholarship;
@@ -2497,8 +2717,128 @@ public partial class LoadBatchView : UserControl
     
     private void SaveBatchEdit()
     {
-        MessageBox.Show("Batch saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        CancelBatchEdit();
+        // Validate all required fields with shortened messages
+        if (editNumCandidates?.Value == 0)
+        {
+            MessageBox.Show("Number of candidates is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (editCboQualification?.SelectedIndex < 0)
+        {
+            MessageBox.Show("Please select a qualification.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(editTxtAssessor?.Text))
+        {
+            MessageBox.Show("Assessor Name is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(editTxtRQMCode?.Text))
+        {
+            MessageBox.Show("RQM Code is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(editTxtScholarship?.Text))
+        {
+            MessageBox.Show("Type of Scholarship is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(editTxtTrainingDuration?.Text))
+        {
+            MessageBox.Show("Training Duration is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (editDtAssessment == null)
+        {
+            MessageBox.Show("Assessment Date is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        try
+        {
+            if (currentEditingBatchPath == null || !Directory.Exists(currentEditingBatchPath))
+            {
+                MessageBox.Show("Batch folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Load current batch info
+            var batchInfo = LoadBatchInfoJson(currentEditingBatchPath);
+            if (batchInfo == null)
+            {
+                MessageBox.Show("Could not load batch information.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Check if candidate count was changed
+            int newCandidateCount = (int)(editNumCandidates?.Value ?? 0);
+            if (newCandidateCount != batchInfo.CandidateCount)
+            {
+                // If candidate count increased, verify all candidates have data
+                if (batchInfo.Candidates.Count < newCandidateCount)
+                {
+                    MessageBox.Show($"Added {newCandidateCount - batchInfo.Candidates.Count} new candidates. Please click 'Edit Candidates' to fill in their details.", 
+                                  "Incomplete Candidate Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            // Validate all candidates have Name and Reference
+            List<int> missingCandidates = new List<int>();
+            for (int i = 0; i < newCandidateCount && i < batchInfo.Candidates.Count; i++)
+            {
+                var candidate = batchInfo.Candidates[i];
+                if (string.IsNullOrWhiteSpace(candidate.Name) || string.IsNullOrWhiteSpace(candidate.Reference))
+                {
+                    missingCandidates.Add(i + 1);
+                }
+            }
+
+            if (missingCandidates.Count > 0)
+            {
+                string missingList = string.Join(", ", missingCandidates);
+                MessageBox.Show($"Candidate(s) {missingList} are missing Name or Reference. Please edit candidates to fill in all required fields.",
+                              "Incomplete Candidate Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Update batch info with edited values
+            batchInfo.CandidateCount = newCandidateCount;
+            batchInfo.Qualification = editCboQualification?.SelectedItem?.ToString() ?? "";
+            batchInfo.Assessor = editTxtAssessor?.Text ?? "";
+            batchInfo.RQMCode = editTxtRQMCode?.Text ?? "";
+            batchInfo.Scholarship = editTxtScholarship?.Text ?? "";
+            batchInfo.TrainingDuration = editTxtTrainingDuration?.Text ?? "";
+            batchInfo.AssessmentDate = editDtAssessment?.Value.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd");
+
+            // Save to JSON file
+            string jsonPath = Path.Combine(currentEditingBatchPath, "batch_info.json");
+            var json = JsonSerializer.Serialize(batchInfo, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(jsonPath, json);
+
+            // Verify file was written
+            if (!File.Exists(jsonPath))
+            {
+                MessageBox.Show("Batch file was not saved properly.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Regenerate documents with updated batch information
+            RegenerateBatchDocuments();
+            
+            MessageBox.Show("Batch saved and documents regenerated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            CancelBatchEdit();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error: {ex.Message}", "Failed to Save", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
     
     private void CancelBatchEdit()
@@ -2507,6 +2847,7 @@ public partial class LoadBatchView : UserControl
         if (btnBrowse != null) btnBrowse.Visible = true;
         if (infoCard != null) infoCard.Visible = true;
         if (searchBox != null) searchBox.Visible = true;
+        if (searchContainer != null) searchContainer.Visible = true;
         if (recentLabel != null) recentLabel.Visible = true;
         if (borderTop != null) borderTop.Visible = true;
         if (borderBottom != null) borderBottom.Visible = true;
@@ -2521,6 +2862,567 @@ public partial class LoadBatchView : UserControl
         RefreshBatchList();
     }
     
+    // Helper methods for document manipulation
+    private void ReplaceFieldValueInDoc(WordprocessingDocument doc, string placeholder, string value)
+    {
+        try
+        {
+            var allTextElements = doc.MainDocumentPart?.Document?.Descendants<Text>().ToList();
+            if (allTextElements == null) return;
+
+            foreach (var textElem in allTextElements)
+            {
+                if (textElem.Text == placeholder)
+                {
+                    textElem.Text = value;
+
+                    var run = textElem.Ancestors<Run>().FirstOrDefault();
+                    if (run != null)
+                    {
+                        var runProps = run.Elements<RunProperties>().FirstOrDefault();
+                        if (runProps == null)
+                        {
+                            runProps = new RunProperties();
+                            run.InsertAt(runProps, 0);
+                        }
+                        runProps.RemoveAllChildren<Bold>();
+                        runProps.Append(new Bold());
+                    }
+                    return;
+                }
+            }
+
+            string fieldName = placeholder switch
+            {
+                "1" => "Qualification",
+                "2" => "Assessor",
+                "3" => "RQM Code",
+                "4" => "Date of Assessment",
+                "5" => "Type of Scholarship/Modality",
+                "6" => "Training Duration",
+                _ => placeholder
+            };
+
+            var allParas = doc.MainDocumentPart?.Document?.Body?.Descendants<Paragraph>().ToList();
+            if (allParas == null) return;
+            foreach (var para in allParas)
+            {
+                var fullText = para.InnerText;
+
+                if (!fullText.Contains(fieldName + ":"))
+                    continue;
+
+                var runs = para.Elements<Run>().ToList();
+
+                int colonRunIdx = -1;
+                for (int i = 0; i < runs.Count; i++)
+                {
+                    if (runs[i].InnerText.Contains(":"))
+                    {
+                        string textBeforeColon = fullText.Substring(0, fullText.IndexOf(runs[i].InnerText) + runs[i].InnerText.IndexOf(":") + 1);
+                        if (textBeforeColon.Contains(fieldName + ":"))
+                        {
+                            colonRunIdx = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (colonRunIdx == -1)
+                    continue;
+
+                string valueWithSpace = " " + value;
+
+                if (colonRunIdx + 1 < runs.Count)
+                {
+                    runs[colonRunIdx + 1].RemoveAllChildren<Text>();
+                    runs[colonRunIdx + 1].Append(new Text(valueWithSpace));
+
+                    var runProps = runs[colonRunIdx + 1].Elements<RunProperties>().FirstOrDefault();
+                    if (runProps == null)
+                    {
+                        runProps = new RunProperties();
+                        runs[colonRunIdx + 1].InsertAt(runProps, 0);
+                    }
+                    runProps.RemoveAllChildren<Bold>();
+                    runProps.Append(new Bold());
+                }
+                else
+                {
+                    var newRun = new Run(new Text(valueWithSpace));
+                    var newRunProps = new RunProperties();
+                    newRunProps.Append(new Bold());
+                    newRun.InsertAt(newRunProps, 0);
+                    para.Append(newRun);
+                }
+
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error replacing field value: {ex.Message}");
+        }
+    }
+
+    private void ReplaceSignatoryInDoc(WordprocessingDocument doc, string placeholder, string value, bool isBold)
+    {
+        var body = doc.MainDocumentPart?.Document?.Body;
+        if (body == null) return;
+
+        var allTextElements = body.Descendants<Text>().ToList();
+        bool replaced = false;
+
+        for (int i = 0; i < allTextElements.Count; i++)
+        {
+            if (!replaced && allTextElements[i].Text == placeholder)
+            {
+                allTextElements[i].Text = value;
+                ApplyFormattingToDoc(allTextElements[i], isBold);
+                
+                if (i + 1 < allTextElements.Count && allTextElements[i + 1].Text == ".")
+                {
+                    allTextElements[i + 1].Text = "";
+                }
+                
+                replaced = true;
+                break;
+            }
+        }
+
+        if (!replaced)
+        {
+            for (int i = 0; i < allTextElements.Count; i++)
+            {
+                if (!replaced && allTextElements[i].Text.Contains(placeholder))
+                {
+                    allTextElements[i].Text = allTextElements[i].Text.Replace(placeholder, value);
+                    ApplyFormattingToDoc(allTextElements[i], isBold);
+                    
+                    if (i + 1 < allTextElements.Count && allTextElements[i + 1].Text == ".")
+                    {
+                        allTextElements[i + 1].Text = "";
+                    }
+                    
+                    replaced = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void ApplyFormattingToDoc(Text textElem, bool isBold)
+    {
+        var run = textElem.Ancestors<Run>().FirstOrDefault();
+        if (run != null)
+        {
+            var runProps = run.Elements<RunProperties>().FirstOrDefault();
+            if (runProps == null)
+            {
+                runProps = new RunProperties();
+                run.InsertAt(runProps, 0);
+            }
+            runProps.RemoveAllChildren<Bold>();
+            
+            if (isBold)
+            {
+                runProps.Append(new Bold());
+            }
+        }
+    }
+    
+    private void RegenerateBatchDocuments()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(currentEditingBatchPath))
+            {
+                MessageBox.Show("No batch path available.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Load the updated batch info
+            string jsonPath = Path.Combine(currentEditingBatchPath, "batch_info.json");
+            if (!File.Exists(jsonPath))
+            {
+                MessageBox.Show("Batch info file not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
+            string jsonContent = File.ReadAllText(jsonPath);
+            BatchInfo batchInfo = JsonSerializer.Deserialize<BatchInfo>(jsonContent) ?? new BatchInfo();
+            
+            // Convert BatchCandidate to Candidate format
+            List<Candidate> candidates = new List<Candidate>();
+            for (int i = 0; i < batchInfo.CandidateCount && i < batchInfo.Candidates.Count; i++)
+            {
+                var bc = batchInfo.Candidates[i];
+                candidates.Add(new Candidate
+                {
+                    Name = bc.Name,
+                    Reference = bc.Reference,
+                    AssessmentFee = bc.AssessmentFee,
+                    AssessorFee = bc.AssessorFee
+                });
+            }
+            
+            // Get assessment date
+            DateTime assessmentDate = DateTime.Now;
+            if (!string.IsNullOrEmpty(batchInfo.AssessmentDate) && DateTime.TryParse(batchInfo.AssessmentDate, out var parsedDate))
+            {
+                assessmentDate = parsedDate;
+            }
+            
+            // Get form values for regeneration
+            string qualification = editCboQualification?.SelectedItem?.ToString() ?? batchInfo.Qualification;
+            string assessor = editTxtAssessor?.Text ?? batchInfo.Assessor;
+            string rqmCode = editTxtRQMCode?.Text ?? batchInfo.RQMCode;
+            string scholarship = editTxtScholarship?.Text ?? batchInfo.Scholarship;
+            string trainingDuration = editTxtTrainingDuration?.Text ?? batchInfo.TrainingDuration;
+            string assessmentDateStr = editDtAssessment?.Value.ToString("MM/dd/yyyy") ?? assessmentDate.ToString("MM/dd/yyyy");
+            
+            // Use the signatories from batch info if available
+            BatchSignatory signatories = batchInfo.Signatories ?? new BatchSignatory();
+            
+            // Regenerate documents using static methods from NewBatchView
+            // Note: We're duplicating the generation logic here to avoid cross-class dependencies
+            RegenerateBillingDocuments(currentEditingBatchPath, candidates, batchInfo.CandidateCount, 
+                                      qualification, assessor, rqmCode, assessmentDateStr, 
+                                      scholarship, trainingDuration, signatories);
+            
+            RegenerateAttendanceDocument(currentEditingBatchPath, candidates, assessmentDate,
+                                        qualification, assessor, rqmCode, scholarship, 
+                                        trainingDuration, signatories);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error regenerating documents: {ex.Message}", "Regeneration Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+    
+    private void RegenerateBillingDocuments(string batchPath, List<Candidate> candidates, int candidateCount,
+                                           string qualification, string assessor, string rqmCode, string assessmentDate,
+                                           string scholarship, string trainingDuration, BatchSignatory signatories)
+    {
+        try
+        {
+            // Regenerate Billing_AssessorFee.docx
+            RegenerateBillingDocument("Templates/BILL-ASSESSOR'S FEE.docx",
+                                     Path.Combine(batchPath, "Billing_AssessorFee.docx"),
+                                     candidates, candidateCount, qualification, assessor, rqmCode,
+                                     assessmentDate, scholarship, trainingDuration, signatories, true);
+            
+            // Regenerate Billing_AssessmentFee.docx
+            RegenerateBillingDocument("Templates/Billing Assessment.docx",
+                                     Path.Combine(batchPath, "Billing_AssessmentFee.docx"),
+                                     candidates, candidateCount, qualification, assessor, rqmCode,
+                                     assessmentDate, scholarship, trainingDuration, signatories, false);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error regenerating billing documents: {ex.Message}", ex);
+        }
+    }
+    
+    private void RegenerateBillingDocument(string template, string output, List<Candidate> candidates,
+                                          int count, string qualification, string assessor, string rqmCode,
+                                          string assessmentDate, string scholarship, string trainingDuration,
+                                          BatchSignatory signatories, bool isAssessor)
+    {
+        if (!File.Exists(template))
+        {
+            throw new FileNotFoundException($"Template not found: {template}");
+        }
+
+        try
+        {
+            File.Copy(template, output, true);
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(output, true))
+            {
+                var tables = doc.MainDocumentPart?.Document?.Body?.Elements<Table>().ToList();
+                if (tables == null || tables.Count == 0)
+                {
+                    throw new Exception("No table found in template");
+                }
+
+                Table table = tables.First();
+                var rows = table.Elements<TableRow>().ToList();
+
+                bool isAssessmentForm = template.Contains("Billing Assessment");
+                int rowsToKeep = isAssessmentForm ? 27 : count + 2;
+
+                while (rows.Count > rowsToKeep)
+                {
+                    table.RemoveChild(rows[rows.Count - 1]);
+                    rows.RemoveAt(rows.Count - 1);
+                }
+
+                int r = 1;
+                decimal totalFee = 0;
+                
+                foreach (var c in candidates)
+                {
+                    if (r < rows.Count)
+                    {
+                        var cells = rows[r].Elements<TableCell>().ToList();
+                        if (cells.Count > 2)
+                        {
+                            cells[1].RemoveAllChildren<Paragraph>();
+                            cells[1].Append(new Paragraph(new Run(new Text(c.Name))));
+                            cells[2].RemoveAllChildren<Paragraph>();
+                            cells[2].Append(new Paragraph(new Run(new Text(c.Reference))));
+                            
+                            if (cells.Count > 3)
+                            {
+                                string feeDisplay = "";
+                                
+                                if (isAssessmentForm)
+                                {
+                                    if (!string.IsNullOrEmpty(c.AssessmentFee) && c.AssessmentFee != "Absent")
+                                    {
+                                        decimal feeAmount = AssessmentFees.GetFeeAmount(qualification, c.AssessmentFee);
+                                        feeDisplay = feeAmount.ToString("F2");
+                                        totalFee += feeAmount;
+                                    }
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(c.AssessorFee))
+                                    {
+                                        if (decimal.TryParse(c.AssessorFee, out decimal assessorFeeAmount))
+                                        {
+                                            feeDisplay = assessorFeeAmount.ToString("F2");
+                                            totalFee += assessorFeeAmount;
+                                        }
+                                    }
+                                }
+                                
+                                cells[3].RemoveAllChildren<Paragraph>();
+                                cells[3].Append(new Paragraph(new Run(new Text(feeDisplay))));
+                            }
+                        }
+                        r++;
+                    }
+                }
+                
+                if (rows.Count > 0)
+                {
+                    var totalRow = rows[rows.Count - 1];
+                    totalRow.RemoveAllChildren<TableCell>();
+                    
+                    var headerRow = rows[0];
+                    var headerCells = headerRow.Elements<TableCell>().ToList();
+                    Shading? headerShading = null;
+                    if (headerCells.Count > 0)
+                    {
+                        headerShading = headerCells[0].TableCellProperties?.Elements<Shading>().FirstOrDefault();
+                    }
+                    
+                    var cell1 = new TableCell();
+                    var tcPr1 = new TableCellProperties();
+                    tcPr1.Append(new GridSpan() { Val = 3 });
+                    if (headerShading != null)
+                    {
+                        var shading1 = new Shading() { Fill = headerShading.Fill };
+                        tcPr1.Append(shading1);
+                    }
+                    cell1.Append(tcPr1);
+                    cell1.Append(new Paragraph(new Run(new Text("Total"))));
+                    totalRow.Append(cell1);
+                    
+                    var cell2 = new TableCell();
+                    var tcPr2 = new TableCellProperties();
+                    tcPr2.Append(new GridSpan() { Val = 1 });
+                    if (headerShading != null)
+                    {
+                        var shading2 = new Shading() { Fill = headerShading.Fill };
+                        tcPr2.Append(shading2);
+                    }
+                    cell2.Append(tcPr2);
+                    if (totalFee > 0)
+                    {
+                        cell2.Append(new Paragraph(new Run(new Text(totalFee.ToString("F2")))));
+                    }
+                    else
+                    {
+                        cell2.Append(new Paragraph());
+                    }
+                    totalRow.Append(cell2);
+                }
+
+                ReplaceFieldValueInDoc(doc, "1", qualification);
+                ReplaceFieldValueInDoc(doc, "2", assessor);
+                ReplaceFieldValueInDoc(doc, "3", rqmCode);
+                ReplaceFieldValueInDoc(doc, "4", assessmentDate);
+                ReplaceFieldValueInDoc(doc, "5", scholarship);
+                ReplaceFieldValueInDoc(doc, "6", trainingDuration);
+
+                if (isAssessor)
+                {
+                    ReplaceSignatoryInDoc(doc, "EDMAN L. VALENCIANO", signatories.BillingAssessorACName, true);
+                    ReplaceSignatoryInDoc(doc, "AC Manager", signatories.BillingAssessorACPosition, false);
+                    ReplaceSignatoryInDoc(doc, "RAMON C. SOLTES, JR", signatories.BillingAssessorName, true);
+                    ReplaceSignatoryInDoc(doc, "AC Processing Officer", signatories.BillingAssessorPosition, false);
+                }
+                else
+                {
+                    ReplaceSignatoryInDoc(doc, "EDMAN L. VALENCIANO", signatories.BillingAssessmentACName, true);
+                    ReplaceSignatoryInDoc(doc, "AC Manager", signatories.BillingAssessmentACPosition, false);
+                    ReplaceSignatoryInDoc(doc, "ROSALYN T. PERIDA, PhD", signatories.BillingAssessmentVSName, true);
+                    ReplaceSignatoryInDoc(doc, "Vocational School Superintendent I", signatories.BillingAssessmentVSPosition, false);
+                }
+
+                doc.MainDocumentPart?.Document?.Save();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error in RegenerateBillingDocument: {ex.Message}", ex);
+        }
+    }
+    
+    private void RegenerateAttendanceDocument(string batchPath, List<Candidate> candidates, DateTime startDate,
+                                             string qualification, string assessor, string rqmCode,
+                                             string scholarship, string trainingDuration, BatchSignatory signatories)
+    {
+        string template = "Templates/Attendance Sheet.docx";
+        string output = Path.Combine(batchPath, "Attendance_Sheet.docx");
+        
+        if (!File.Exists(template))
+        {
+            throw new FileNotFoundException($"Template not found: {template}");
+        }
+
+        try
+        {
+            File.Copy(template, output, true);
+
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(output, true))
+            {
+                var body = doc.MainDocumentPart?.Document?.Body;
+                var tables = body?.Elements<Table>().ToList();
+                if (tables == null || tables.Count == 0)
+                {
+                    throw new Exception("No table found in attendance template");
+                }
+
+                int numPages = candidates.Count <= 10 ? 1 : (candidates.Count <= 20 ? 2 : 3);
+                var bodyElements = body?.ChildElements.Cast<OpenXmlElement>().ToList() ?? new List<OpenXmlElement>();
+                var table = tables.Last();
+
+                ReplaceFieldValueInDoc(doc, "QUALIFICATION TITLE", qualification);
+                ReplaceFieldValueInDoc(doc, "1", qualification);
+                ReplaceFieldValueInDoc(doc, "2", assessor);
+                ReplaceFieldValueInDoc(doc, "3", rqmCode);
+                ReplaceFieldValueInDoc(doc, "5", scholarship);
+                ReplaceFieldValueInDoc(doc, "6", trainingDuration);
+                
+                ReplaceSignatoryInDoc(doc, "EDMAN L. VALENCIANO", signatories.AttendanceSheetName, true);
+                ReplaceSignatoryInDoc(doc, "AC Manager", signatories.AttendanceSheetPosition, false);
+
+                void PopulateTablePage(Table tbl, int startCandidateIndex, DateTime pageDate)
+                {
+                    var tblRows = tbl.Elements<TableRow>().ToList();
+                    UpdateDateInTable(tbl, pageDate);
+                    
+                    for (int i = 0; i < 10 && (i + 1) < tblRows.Count; i++)
+                    {
+                        int rowIdx = i + 3;
+                        int candIdx = startCandidateIndex + i;
+                        int rowNum = i + 1;
+                        
+                        var cells = tblRows[rowIdx].Elements<TableCell>().ToList();
+                        if (cells.Count >= 3)
+                        {
+                            var noCell = cells[0];
+                            var noParagraphs = noCell.Elements<Paragraph>().ToList();
+                            if (noParagraphs.Count > 0)
+                            {
+                                noParagraphs[0].RemoveAllChildren();
+                                noParagraphs[0].Append(new Run(new Text(rowNum.ToString())));
+                            }
+                            
+                            var nameCell = cells[1];
+                            var nameParagraphs = nameCell.Elements<Paragraph>().ToList();
+                            if (nameParagraphs.Count > 0)
+                            {
+                                nameParagraphs[0].RemoveAllChildren();
+                                if (candIdx < candidates.Count)
+                                {
+                                    nameParagraphs[0].Append(new Run(new Text(candidates[candIdx].Name)));
+                                }
+                            }
+                            
+                            var refCell = cells[2];
+                            var refParagraphs = refCell.Elements<Paragraph>().ToList();
+                            if (refParagraphs.Count > 0)
+                            {
+                                refParagraphs[0].RemoveAllChildren();
+                                if (candIdx < candidates.Count)
+                                {
+                                    refParagraphs[0].Append(new Run(new Text(candidates[candIdx].Reference)));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                void UpdateDateInTable(Table tbl, DateTime date)
+                {
+                    var tblRows = tbl.Elements<TableRow>().ToList();
+                    for (int r = 0; r < Math.Min(3, tblRows.Count); r++)
+                    {
+                        var cells = tblRows[r].Elements<TableCell>().ToList();
+                        for (int c = 0; c < cells.Count; c++)
+                        {
+                            var cellText = cells[c].InnerText;
+                            if (cellText.Contains("Date of Assessment") && c + 1 < cells.Count)
+                            {
+                                var dateCell = cells[c + 1];
+                                var paras = dateCell.Elements<Paragraph>().ToList();
+                                if (paras.Count > 0)
+                                {
+                                    paras[0].RemoveAllChildren();
+                                    paras[0].Append(new Run(new Text(date.ToString("MM/dd/yyyy"))));
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                PopulateTablePage(table, 0, startDate);
+
+                if (numPages > 1)
+                {
+                    for (int pageNum = 1; pageNum < numPages; pageNum++)
+                    {
+                        DateTime pageDate = startDate.AddDays(pageNum);
+
+                        foreach (var element in bodyElements)
+                        {
+                            body?.Append((OpenXmlElement)element.CloneNode(true));
+                        }
+                        
+                        var allTables = body?.Elements<Table>().ToList();
+                        if (allTables != null && allTables.Count > 0)
+                        {
+                            var clonedTable = allTables.Last();
+                            int startCandidate = pageNum * 10;
+                            PopulateTablePage(clonedTable, startCandidate, pageDate);
+                        }
+                    }
+                }
+
+                doc.MainDocumentPart?.Document?.Save();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error regenerating attendance document: {ex.Message}", ex);
+        }
+    }
+    
     private void BrowseForBatch(object? sender, EventArgs e)
     {
         using (var folderDialog = new FolderBrowserDialog())
@@ -2533,11 +3435,75 @@ public partial class LoadBatchView : UserControl
                 
                 try
                 {
-                    System.Diagnostics.Process.Start("explorer.exe", selectedFolder);
+                    // Check if all required documents exist
+                    string[] requiredFiles = 
+                    {
+                        "Billing_AssessorFee.docx",
+                        "Billing_AssessmentFee.docx",
+                        "Attendance_Sheet.docx"
+                    };
+                    
+                    bool allFilesExist = true;
+                    foreach (var file in requiredFiles)
+                    {
+                        if (!File.Exists(Path.Combine(selectedFolder, file)))
+                        {
+                            allFilesExist = false;
+                            break;
+                        }
+                    }
+                    
+                    if (!allFilesExist)
+                    {
+                        MessageBox.Show("The selected folder does not contain all required documents:\n" +
+                                      "• Billing_AssessorFee.docx\n" +
+                                      "• Billing_AssessmentFee.docx\n" +
+                                      "• Attendance_Sheet.docx",
+                                      "Missing Files", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    
+                    // Try to load batch_info.json, or create a new one
+                    string jsonPath = Path.Combine(selectedFolder, "batch_info.json");
+                    BatchInfo? batchInfo = null;
+                    
+                    if (File.Exists(jsonPath))
+                    {
+                        batchInfo = LoadBatchInfoJson(selectedFolder);
+                    }
+                    
+                    if (batchInfo == null)
+                    {
+                        // Create a new batch info from folder name
+                        batchInfo = new BatchInfo
+                        {
+                            Qualification = "Bookkeeping NC II",
+                            CandidateCount = 1,
+                            Assessor = "Not Set",
+                            AssessmentDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                            RQMCode = "",
+                            Scholarship = "",
+                            TrainingDuration = "",
+                            Candidates = new List<BatchCandidate>(),
+                            Signatories = new BatchSignatory()
+                        };
+                        
+                        // Save the new batch info
+                        try
+                        {
+                            var json = JsonSerializer.Serialize(batchInfo, new JsonSerializerOptions { WriteIndented = true });
+                            File.WriteAllText(jsonPath, json);
+                        }
+                        catch { }
+                    }
+                    
+                    // Load the batch for editing
+                    currentEditingBatchPath = selectedFolder;
+                    ShowBatchEditForm(batchInfo);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error opening folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error loading batch: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -2550,293 +3516,6 @@ public partial class LoadBatchView : UserControl
     }
 }
 
-// ====================================================================
-// REPORTS VIEW
-// ====================================================================
-public partial class ReportsView : UserControl
-{
-    public ReportsView()
-    {
-        InitializeComponent();
-        SetupView();
-    }
-    
-    private void SetupView()
-    {
-        this.Dock = DockStyle.Fill;
-        this.BackColor = Color.FromArgb(241, 245, 249);
-        this.AutoScroll = true;
-        
-        Panel topBar = new Panel
-        {
-            Height = 80,
-            Dock = DockStyle.Top,
-            BackColor = Color.White,
-            Padding = new Padding(30, 15, 30, 15)
-        };
-        
-        Label title = new Label
-        {
-            Text = "Reports & Analytics",
-            Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold),
-            ForeColor = Color.FromArgb(30, 41, 59),
-            AutoSize = true,
-            Location = new Point(30, 15)
-        };
-        
-        Label subtitle = new Label
-        {
-            Text = "View batch statistics and export data",
-            Font = new Font("Segoe UI", 9F),
-            ForeColor = Color.FromArgb(100, 116, 139),
-            AutoSize = true,
-            Location = new Point(30, 45)
-        };
-        
-        topBar.Controls.Add(title);
-        topBar.Controls.Add(subtitle);
-        this.Controls.Add(topBar);
-        
-        Panel content = new Panel
-        {
-            Location = new Point(0, 80),
-            Width = this.Width,
-            Height = this.Height - 80,
-            BackColor = Color.FromArgb(241, 245, 249),
-            AutoScroll = true,
-            Padding = new Padding(30),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
-        };
-        
-        CreateStatisticsCards(content, 30, 30);
-        
-        Panel actionsCard = CreateQuickActionsCard();
-        actionsCard.Location = new Point(30, 160);
-        content.Controls.Add(actionsCard);
-        
-        this.Controls.Add(content);
-    }
-    
-    private void CreateStatisticsCards(Panel parent, int x, int y)
-    {
-        int totalBatches = CountBatches();
-        int totalCandidates = CountTotalCandidates();
-        
-        CreateStatCard(parent, "Total Batches", totalBatches.ToString(), x, y, Color.FromArgb(37, 99, 235));
-        CreateStatCard(parent, "Total Candidates", totalCandidates.ToString(), x + 230, y, Color.FromArgb(22, 163, 74));
-        CreateStatCard(parent, "This Month", "0", x + 460, y, Color.FromArgb(168, 85, 247));
-        CreateStatCard(parent, "Documents", (totalBatches * 3).ToString(), x + 690, y, Color.FromArgb(249, 115, 22));
-    }
-    
-    private void CreateStatCard(Panel parent, string label, string value, int x, int y, Color accentColor)
-    {
-        Panel card = new Panel
-        {
-            Location = new Point(x, y),
-            Width = 210,
-            Height = 110,
-            BackColor = Color.White,
-            BorderStyle = BorderStyle.FixedSingle
-        };
-        
-        Label lblLabel = new Label
-        {
-            Text = label,
-            Location = new Point(15, 15),
-            AutoSize = true,
-            Font = new Font("Segoe UI", 8.5F),
-            ForeColor = Color.FromArgb(100, 116, 139)
-        };
-        
-        Label lblValue = new Label
-        {
-            Text = value,
-            Location = new Point(15, 45),
-            AutoSize = true,
-            Font = new Font("Segoe UI", 22F, FontStyle.Bold),
-            ForeColor = Color.FromArgb(30, 41, 59)
-        };
-        
-        Panel colorBar = new Panel
-        {
-            Location = new Point(0, 0),
-            Width = 4,
-            Height = 110,
-            BackColor = accentColor
-        };
-        
-        card.Controls.Add(colorBar);
-        card.Controls.Add(lblLabel);
-        card.Controls.Add(lblValue);
-        parent.Controls.Add(card);
-    }
-    
-    private Panel CreateQuickActionsCard()
-    {
-        Panel card = new Panel
-        {
-            Width = 900,
-            Height = 250,
-            BackColor = Color.White,
-            BorderStyle = BorderStyle.FixedSingle,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-        };
-        
-        Panel header = new Panel
-        {
-            Height = 50,
-            Dock = DockStyle.Top,
-            BackColor = Color.FromArgb(248, 250, 252)
-        };
-        
-        Label headerLabel = new Label
-        {
-            Text = "Quick Actions",
-            Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
-            ForeColor = Color.FromArgb(30, 41, 59),
-            Location = new Point(20, 15),
-            AutoSize = true
-        };
-        header.Controls.Add(headerLabel);
-        card.Controls.Add(header);
-        
-        AddActionItem(card, "📂 Open Output Folder", "View all generated documents", 60, OpenOutputFolder);
-        AddActionItem(card, "📊 Refresh Statistics", "Update the statistics above", 130, RefreshStats);
-        
-        return card;
-    }
-    
-    private void AddActionItem(Panel parent, string title, string description, int yPos, EventHandler clickHandler)
-    {
-        Panel item = new Panel
-        {
-            Location = new Point(20, yPos),
-            Width = 710,
-            Height = 60,
-            BackColor = Color.FromArgb(249, 250, 251),
-            BorderStyle = BorderStyle.FixedSingle
-        };
-        
-        Label lblTitle = new Label
-        {
-            Text = title,
-            Location = new Point(15, 8),
-            Width = 650,
-            AutoSize = false,
-            Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
-            ForeColor = Color.FromArgb(30, 41, 59)
-        };
-        
-        Label lblDesc = new Label
-        {
-            Text = description,
-            Location = new Point(15, 30),
-            Width = 650,
-            AutoSize = false,
-            Font = new Font("Segoe UI", 8.5F),
-            ForeColor = Color.FromArgb(100, 116, 139)
-        };
-        
-        Button btnAction = new Button
-        {
-            Text = "Open",
-            Location = new Point(740, 13),
-            Width = 100,
-            Height = 32,
-            BackColor = Color.FromArgb(37, 99, 235),
-            ForeColor = Color.White,
-            FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
-            Cursor = Cursors.Hand
-        };
-        btnAction.FlatAppearance.BorderSize = 0;
-        btnAction.Click += clickHandler;
-        
-        item.Controls.Add(lblTitle);
-        item.Controls.Add(lblDesc);
-        item.Controls.Add(btnAction);
-        parent.Controls.Add(item);
-    }
-    
-    private int CountBatches()
-    {
-        try
-        {
-            string outputDir = "Output";
-            if (!Directory.Exists(outputDir))
-                return 0;
-            
-            return Directory.GetDirectories(outputDir)
-                .Count(f => File.Exists(Path.Combine(f, "batch_info.json")));
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-    
-    private int CountTotalCandidates()
-    {
-        try
-        {
-            string outputDir = "Output";
-            if (!Directory.Exists(outputDir))
-                return 0;
-            
-            int total = 0;
-            var folders = Directory.GetDirectories(outputDir)
-                .Where(f => File.Exists(Path.Combine(f, "batch_info.json")));
-            
-            foreach (var folder in folders)
-            {
-                try
-                {
-                    string jsonPath = Path.Combine(folder, "batch_info.json");
-                    string json = File.ReadAllText(jsonPath);
-                    var batchInfo = JsonSerializer.Deserialize<BatchInfo>(json);
-                    if (batchInfo != null)
-                        total += batchInfo.CandidateCount;
-                }
-                catch { }
-            }
-            
-            return total;
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-    
-    private void OpenOutputFolder(object? sender, EventArgs e)
-    {
-        try
-        {
-            string outputDir = "Output";
-            if (!Directory.Exists(outputDir))
-                Directory.CreateDirectory(outputDir);
-            
-            System.Diagnostics.Process.Start("explorer.exe", outputDir);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error opening folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
-    
-    private void RefreshStats(object? sender, EventArgs e)
-    {
-        this.Controls.Clear();
-        SetupView();
-        MessageBox.Show("Statistics refreshed!", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
-    }
-    
-    private void InitializeComponent()
-    {
-        this.SuspendLayout();
-        this.ResumeLayout(false);
-    }
-}
 
 // ====================================================================
 // CANDIDATE FORM (DIALOG)
@@ -2945,14 +3624,15 @@ public class CandidateForm : Form
         {
             Text = "🗑 Clear All Fees",
             Top = y,
-            Left = 120,
+            Left = 650,
             Width = 160,
             Height = 35,
             Font = new Font("Segoe UI", 10, FontStyle.Bold),
             BackColor = Color.FromArgb(220, 53, 69),
             ForeColor = Color.White,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnClearAllFees.FlatAppearance.BorderSize = 0;
         btnClearAllFees.Click += (s, e) =>
@@ -2966,7 +3646,7 @@ public class CandidateForm : Form
         Controls.Add(btnClearAllFees);
         y += 50;
 
-        btnSave.Text = "✓ Save";
+        btnSave.Text = "Save";
         btnSave.Top = y;
         btnSave.Left = 300;
         btnSave.Width = 150;
@@ -2979,7 +3659,7 @@ public class CandidateForm : Form
         btnSave.Click += (s, e) => { DialogResult = DialogResult.OK; Close(); };
         Controls.Add(btnSave);
 
-        btnCancel.Text = "✕ Cancel";
+        btnCancel.Text = "Cancel";
         btnCancel.Top = y;
         btnCancel.Left = 460;
         btnCancel.Width = 150;
@@ -3099,7 +3779,7 @@ public class CustomDatesForm : Form
 
         y += 15;
 
-        btnSave.Text = "✓ Save Dates";
+        btnSave.Text = "Save Dates";
         btnSave.Top = y;
         btnSave.Left = 120;
         btnSave.Width = 140;
@@ -3112,7 +3792,7 @@ public class CustomDatesForm : Form
         btnSave.Click += (s, e) => { DialogResult = DialogResult.OK; Close(); };
         Controls.Add(btnSave);
 
-        btnCancel.Text = "✕ Cancel";
+        btnCancel.Text = "Cancel";
         btnCancel.Top = y;
         btnCancel.Left = 270;
         btnCancel.Width = 140;
@@ -3267,8 +3947,8 @@ public class EditForm : Form
         {
             Text = "✎ Edit Candidate Details",
             Top = y,
-            Left = 20,
-            Width = 320,
+            Left = 40,
+            Width = 300,
             Height = 40,
             Font = new Font("Segoe UI", 10, FontStyle.Bold),
             BackColor = Color.FromArgb(0, 102, 204),
@@ -3318,8 +3998,8 @@ public class EditForm : Form
         btnEditSignatories = new Button()
         {
             Text = "👤 Edit Signatories",
-            Top = y,
-            Left = 20,
+            Top = 375,
+            Left = 360,
             Width = 300,
             Height = 40,
             Font = new Font("Segoe UI", 10, FontStyle.Bold),
@@ -3344,9 +4024,9 @@ public class EditForm : Form
 
         btnDone = new Button()
         {
-            Text = "✓ Done - Regenerate",
+            Text = "Done",
             Top = y,
-            Left = 150,
+            Left = 200,
             Width = 140,
             Height = 40,
             Font = new Font("Segoe UI", 10, FontStyle.Bold),
@@ -3378,9 +4058,9 @@ public class EditForm : Form
 
         btnCancel = new Button()
         {
-            Text = "✕ Cancel",
+            Text = "Cancel",
             Top = y,
-            Left = 310,
+            Left = 360,
             Width = 140,
             Height = 40,
             Font = new Font("Segoe UI", 10, FontStyle.Bold),
